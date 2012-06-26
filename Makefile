@@ -1,6 +1,6 @@
-PROGRAM=elf
-CFLAGS=-O2
-OBJS=elf.o
+PROGRAM=xfastsim
+CFLAGS=-O4
+OBJS=
 
 all: $(PROGRAM)
 
@@ -9,7 +9,7 @@ all: $(PROGRAM)
 	gcc $(CFLAGS) -c $< -o $@
             
 # Rules for generating the executables.
-$(PROGRAM): main.c $(OBJS)
+$(PROGRAM): xfastsim1.c $(OBJS)
 	@echo 'Generating executable ...'
 	gcc $^ -o $@ 
 
