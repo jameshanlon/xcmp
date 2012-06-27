@@ -6,6 +6,7 @@
   .extern setupTraps
   .extern resetChanends
   .extern initThreads
+  .extern memory
   
   .globl main
   .globl _start
@@ -31,3 +32,7 @@ _start:
   outct res[r11], 1
   out res[r11], r11
 
+  mov r0, r11
+  bl memory
+
+  waiteu

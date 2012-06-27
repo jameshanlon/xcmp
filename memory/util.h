@@ -39,6 +39,12 @@ do { \
   asm("chkct res[%0], %1" :: "r"(c), "r"(value)); \
 } while(0)
 
+// INCT
+#define INCT(c, value) \
+do { \
+  asm("inct %0, res[%1]" :"=r"(value) : "r"(c)); \
+} while(0)
+
 // OUTCT CT_END
 #define OUTCT_END(c) \
 do { \

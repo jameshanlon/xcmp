@@ -3,18 +3,18 @@
 set -x
 
 # Bootstrap the compiler (>sim2)
-cp ecmps.bin a.bin && ./xfastsim < ecmps.x && cp sim2 a.bin && ./xfastsim < ecmps.x
+cp ecmps.bin a.bin && \
+  ./xfastsim < ecmps.x && \
+   cp sim2 a.bin && \
+  ./xfastsim < ecmps-noserver.x
 
 # Wrap compiler binary in an ELF (>a.elf)
 ./elf/elf sim2
 
 # Create an XE file if it doesn't exist
-if [ ! -f a.xe ]; then
-  (cd memory && make)
-  cp memory/a.xe .
-#  echo "#include <xs1.h>" > main.xc
-#  echo "int main(void) { return 0; }" >> main.xc
-#  xcc -target=XK-1 main.xc -o a.xe
+if [ memory/a.xe -nt a.xe ]; then
+  cp memory/a.xe ./a.xe
+#  (cd memory && make)
 fi
 
 # Replace in xe file
