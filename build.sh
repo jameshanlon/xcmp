@@ -6,7 +6,7 @@ set -x
 cp ecmps.bin a.bin && \
   ./xfastsim < ecmps.x && \
    cp sim2 a.bin && \
-  ./xfastsim < ecmps-noserver.x
+  ./xfastsim < test.x
 
 # Wrap compiler binary in an ELF (>a.elf)
 ./elf/elf sim2

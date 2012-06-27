@@ -1,6 +1,8 @@
 XCC         := xcc
-COMPILE_XCC := $(XCC) -Wall -O2 -c
 LINK_FLAGS  := -O2 -nostartfiles -Xmapper --nochaninit
+NUM_CORES   := 4
+DEFINES     := -DNUM_CORES=$(NUM_CORES)  
+COMPILE_XCC := $(XCC) -Wall -O2 -c $(DEFINES)
 
 all: a.xe 
 
@@ -26,7 +28,7 @@ controller.xe: startup_S.o startup_xc.o controller.o
 
 leaf.xe: startup_S.o startup_xc.o leaf.o
 	@echo 'Generating leaf executable...'
-	xcc $^ -o $@ 1core.xn $(LINK_FLAGS)
+	xcc $^ -o $@ -DNUM_CORES=$(NUM_CORES) 1core.xn $(LINK_FLAGS)
 
 a.xe: controller.xe leaf.xe container.xe
 	xobjdump --split controller.xe

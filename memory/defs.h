@@ -28,8 +28,14 @@
 #define et_INSUFFICIENT_MEMORY   3
 #define et_INSUFFICIENT_TIMERS   4
 
+// Emulated memory
+#define CT_END                   1
 #define CT_READ                  3
 #define CT_WRITE                 4
+
+#define LEAF_OFFSET              2
+#define NUM_LEAVES               NUM_CORES-LEAF_OFFSET
+#define LEAF_STORAGE             70000
 
 #endif
 
