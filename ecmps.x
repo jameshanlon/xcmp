@@ -3446,14 +3446,8 @@ proc initfrmchans(val x) is
         genrus(i_chkcti, 10, ct_eom);
         gen2r(i_in, 9, 10);
         gen2r(i_setd, 9, 10);
-<<<<<<< HEAD
         genru6(i_stwdp, 10, tree[tree[x + t_op5] + t_op3])
         %;gen0r(i_waiteu)
-=======
-        %genru6(i_stwdp, 10, tree[x + t_op3])
-        genru6(i_stwdp, 10, tree[tree[x + t_op5] + t_op3])
-        %gen0r(i_waiteu)
->>>>>>> 2c31bdec45142742e1c9f060819c744e8bdbddcf
       }
       else
       { genrus(i_getr, 10, r_chan);

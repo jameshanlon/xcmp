@@ -27,6 +27,9 @@
 #define et_INSUFFICIENT_SYNCS    2
 #define et_INSUFFICIENT_MEMORY   3
 #define et_INSUFFICIENT_TIMERS   4
-                                
+
+#define CT_READ                  3
+#define CT_WRITE                 4
+
 #endif
 

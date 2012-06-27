@@ -4,34 +4,27 @@ LINK_FLAGS  := -O2 -nostartfiles -Xmapper --nochaninit
 
 all: a.xe 
 
-globals_S.o: globals.S
-	$(COMPILE_XCC) $< -o $@
-
 startup_S.o: startup.S
 	$(COMPILE_XCC) $< -o $@
 
 startup_xc.o: startup.xc
 	$(COMPILE_XCC) $< -o $@
 
-controller_xc.o: controller.xc
+controller.o: controller.S
 	$(COMPILE_XCC) $< -o $@
 
-controller_S.o: controller.S
-	$(COMPILE_XCC) $< -o $@
-
-leaf_S.o: leaf.S
+leaf.o: leaf.S
 	$(COMPILE_XCC) $< -o $@
 
 container.xe: container.xc
 	@echo 'Generating container executable...'
 	xcc $(COMPILE_FLAGS) 4core.xn $< -o $@
             
-controller.xe: startup_S.o startup_xc.o \
-    controller_S.o controller_xc.o globals_S.o
+controller.xe: startup_S.o startup_xc.o controller.o 
 	@echo 'Generating controller executable...'
 	xcc $^ -o $@ 1core.xn $(LINK_FLAGS)
 
-leaf.xe: leaf_S.o
+leaf.xe: startup_S.o startup_xc.o leaf.o
 	@echo 'Generating leaf executable...'
 	xcc $^ -o $@ 1core.xn $(LINK_FLAGS)
 
@@ -46,5 +39,5 @@ a.xe: controller.xe leaf.xe container.xe
 	mv container.xe a.xe
 
 clean:
-	@rm *.o $(PROGRAM)
+	@rm *.o a.xe
 
