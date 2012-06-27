@@ -511,8 +511,8 @@ val ct_write      = #4;
 val sp_on         = #8;
 
 proc main() is
-{ treeserve() 
-  & { 
+{ %treeserve() 
+  %& { 
       selectoutput(messagestream);  
 
       formtree();
@@ -527,7 +527,7 @@ proc main() is
       prints("%% program size: "); printn(codesize * 2); newline();
   
       prints("%% size: "); printn((binsize * 2) + (arrayspace * 4)); newline() 
-  }
+  %}
 }
 
 proc treeserve() is
@@ -3446,8 +3446,8 @@ proc initfrmchans(val x) is
         genrus(i_chkcti, 10, ct_eom);
         gen2r(i_in, 9, 10);
         gen2r(i_setd, 9, 10);
-        genru6(i_stwdp, 10, tree[tree[x + t_op5] + t_op3])
-        %;gen0r(i_waiteu)
+        genru6(i_stwdp, 10, tree[x + t_op3])%;
+        %gen0r(i_waiteu)
       }
       else
       { genrus(i_getr, 10, r_chan);

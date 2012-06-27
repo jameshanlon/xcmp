@@ -1,6 +1,6 @@
 XCC         := xcc
 COMPILE_XCC := $(XCC) -Wall -O2 -c
-LINK_FLAGS  := -O2  XS1-G4B-FB512.xn -nostartfiles -Xmapper --nochaninit
+LINK_FLAGS  := -O2 -nostartfiles -Xmapper --nochaninit
 
 all: a.xe 
 
@@ -13,22 +13,37 @@ startup_S.o: startup.S
 startup_xc.o: startup.xc
 	$(COMPILE_XCC) $< -o $@
 
+controller_xc.o: controller.xc
+	$(COMPILE_XCC) $< -o $@
+
 controller_S.o: controller.S
+	$(COMPILE_XCC) $< -o $@
+
+leaf_S.o: leaf.S
 	$(COMPILE_XCC) $< -o $@
 
 container.xe: container.xc
 	@echo 'Generating container executable...'
-	xcc $(COMPILE_FLAGS) XS1-G4B-FB512.xn $< -o $@
+	xcc $(COMPILE_FLAGS) 4core.xn $< -o $@
             
-controller.xe: startup_S.o startup_xc.o controller_S.o globals_S.o
+controller.xe: startup_S.o startup_xc.o \
+    controller_S.o controller_xc.o globals_S.o
 	@echo 'Generating controller executable...'
-	xcc $^ -o $@ $(LINK_FLAGS)
+	xcc $^ -o $@ 1core.xn $(LINK_FLAGS)
 
-a.xe: controller.xe container.xe
+leaf.xe: leaf_S.o
+	@echo 'Generating leaf executable...'
+	xcc $^ -o $@ 1core.xn $(LINK_FLAGS)
+
+a.xe: controller.xe leaf.xe container.xe
 	xobjdump --split controller.xe
 	xobjdump -r 0,1,image_n0c0.elf container.xe
+	rm controller.xe image_n0c0.elf config.xml platform_def.xn program_info.txt
+	xobjdump --split leaf.xe
+	xobjdump -r 0,2,image_n0c0.elf container.xe
+	xobjdump -r 0,3,image_n0c0.elf container.xe
+	rm leaf.xe image_n0c0.elf config.xml platform_def.xn program_info.txt
 	mv container.xe a.xe
-	rm controller.xe image_n* config.xml platform_def.xn program_info.txt
 
 clean:
 	@rm *.o $(PROGRAM)

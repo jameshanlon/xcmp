@@ -10,9 +10,9 @@ xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
   </Declarations>
 
   <Packages>
-    <Package id="0" Type="XS1-G4B-FB512">
+    <Package id="0" Type="4core">
       <Nodes>
-        <Node Id="0" InPackageId="0" Type="XS1-G4B-LM">
+        <Node Id="0" InPackageId="0" Type="4core">
           <Core Number="0" Reference="stdcore[0]"/>
           <Core Number="1" Reference="stdcore[1]"/>
           <Core Number="2" Reference="stdcore[2]"/>
