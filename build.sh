@@ -10,9 +10,11 @@ cp ecmps.bin a.bin && ./xfastsim < ecmps.x && cp sim2 a.bin && ./xfastsim < ecmp
 
 # Create an XE file if it doesn't exist
 if [ ! -f a.xe ]; then
-  echo "#include <xs1.h>" > main.xc
-  echo "int main(void) { return 0; }" >> main.xc
-  xcc -target=XK-1 main.xc -o a.xe
+  (cd memory && make)
+  cp memory/a.xe .
+#  echo "#include <xs1.h>" > main.xc
+#  echo "int main(void) { return 0; }" >> main.xc
+#  xcc -target=XK-1 main.xc -o a.xe
 fi
 
 # Replace in xe file
