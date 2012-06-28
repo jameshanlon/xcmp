@@ -3438,25 +3438,25 @@ proc initfrmchans(val x) is
   { if (tree[x + t_op] = s_chan) 
     then
     { % Check for a 'tree' channel and assume no other chanends are allocated
-      y := tree[x + t_op1];
-      if((((tree[y+2]>>8) and 255) = 't') and (((tree[y+2]>>16) and 255) = 'r') and
-        (((tree[y+2]>>24) and 255) = 'e') and ((tree[y+3] and 255) = 'e'))
-      then
-      { genrus(i_getr, 10, r_chan);
+      %y := tree[x + t_op1];
+      %if((((tree[y+2]>>8) and 255) = 't') and (((tree[y+2]>>16) and 255) = 'r') and
+      %  (((tree[y+2]>>24) and 255) = 'e') and ((tree[y+3] and 255) = 'e'))
+      %then
+      %{ 
+        genrus(i_getr, 10, r_chan);
         genrus(i_chkcti, 10, ct_eom);
         gen2r(i_in, 9, 10);
         gen2r(i_setd, 9, 10);
         genru6(i_stwdp, 10, tree[tree[x + t_op5] + t_op3])
-        %;gen0r(i_waiteu)
-      }
-      else
-      { genrus(i_getr, 10, r_chan);
-        genrus(i_getr, 9, r_chan);
-        gen2r(i_setd, 9, 10);
-        gen2r(i_setd, 10, 9);
-        genru6(i_stwdp, 10, tree[x + t_op3]);
-        genru6(i_stwdp, 9, tree[tree[x + t_op5] + t_op3])
-      }
+      %}
+      %else
+      %{ genrus(i_getr, 10, r_chan);
+      %  genrus(i_getr, 9, r_chan);
+      %  gen2r(i_setd, 9, 10);
+      %  gen2r(i_setd, 10, 9);
+      %  genru6(i_stwdp, 10, tree[x + t_op3]);
+      %  genru6(i_stwdp, 9, tree[tree[x + t_op5] + t_op3])
+      %}
     }
     else 
     if (tree[x + t_op] = s_timer)

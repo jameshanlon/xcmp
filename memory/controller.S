@@ -15,14 +15,6 @@
 
   .align 2 
   
-  .cc_top controller.function, controller
-  .align 2
-controller:
-  entsp 0
-exit:
-  retsp 0
-  .cc_bottom controller.function
-
 main:
 _start:
 init:
@@ -32,43 +24,44 @@ init:
   bl initPointers
   bl setupTraps
   bl resetChanends
-  bl initThreads
- 
-  // Initilise with the client tree channel
+  //bl initThreads
+  
+  // Get tree, cb and leaf chanends
   getr  r0, XS1_RES_TYPE_CHANEND
-  ldc   r11, XS1_RES_TYPE_CHANEND
-  setd  res[r0], r11
-  outct res[r0], CT_END
-  out   res[r0], r0
-  
-  // Initilise with the client cb channel
   getr  r1, XS1_RES_TYPE_CHANEND
-  ldc   r10, 0x200
-  ldc   r11, XS1_RES_TYPE_CHANEND
-  or    r11, r11, r10
-  setd  res[r1], r11
-  outct res[r1], CT_END
-  out   res[r1], r1
-  
-  // Get a channel to talk to leaves
   getr  r2, XS1_RES_TYPE_CHANEND
-  stw   r11, dp[leafChan]
+  stw   r2, dp[leafChan]
+
+  // Initialise pointers
+  ldaw  r4, dp[data]
+  ldw   r5, cp[leafStorage]
+
+  // Setup event vectors on channels
+  ldap r11, treeChanAccess
+  setv res[r0], r11
+  setc res[r0], XS1_SETC_IE_MODE_EVENT
+  eeu  res[r0]
+  ldap r11, cbChanAccess
+  setv res[r1], r11
+  setc res[r1], XS1_SETC_IE_MODE_EVENT
+  eeu  res[r1]
+  setsr XS1_SR_EEBLE_MASK
   
   // Synchronise with all remote leaves
-  ldc   r11, LEAF_OFFSET
-  ldc   r10, NUM_LEAVES+LEAF_OFFSET-2
+  ldc   r10, LEAF_OFFSET+1
+  ldc   r11, NUM_LEAVES+LEAF_OFFSET
 syncLoop:
-  eq    r9, r11, r10
+  eq    r9, r10, r11
   bt    r9, exitSyncLoop
-  shl   r10, r11, 16
-  ldc   r11, XS1_RES_TYPE_CHANEND 
-  or    r10, r10, r11         // dest = dest<<16 | XS1_TYPE_CHANEND
-  setd  res[r2], r10
+  shl   r9, r10, 16
+  ldc   r8, XS1_RES_TYPE_CHANEND 
+  or    r8, r9, r8         // dest = dest<<16 | XS1_TYPE_CHANEND
+  setd  res[r2], r8
   out   res[r2], r2
   outct res[r2], CT_END
   chkct res[r2], CT_END
-  add   r11, r11, 1
-  bu    haltLoop
+  add   r10, r10, 1
+  bu    syncLoop
 exitSyncLoop:
 
   // r0: chanend tree
@@ -83,16 +76,21 @@ exitSyncLoop:
   // r9: address
   // r10: address offset
   // r11: scratch
-  
-  ldaw  r4, dp[data]
-  ldw   r5, cp[leafStorage]
 
-  // Setup event vectors on channels
-  ldap r11, treeChanAccess
-  setv res[r0], r11
-  ldap r11, cbChanAccess
-  setv res[r1], r11
-  setsr XS1_SR_EEBLE_MASK
+initChans:
+  // Initilise with the client tree channel
+  ldc   r11, XS1_RES_TYPE_CHANEND
+  setd  res[r0], r11
+  outct res[r0], CT_END
+  out   res[r0], r0
+  
+  // Initilise with the client cb channel
+  ldc   r10, 0x100
+  ldc   r11, XS1_RES_TYPE_CHANEND
+  or    r11, r11, r10
+  setd  res[r1], r11
+  outct res[r1], CT_END
+  out   res[r1], r1
 
 loop:
   waiteu
@@ -150,7 +148,7 @@ remoteRead:
 write:
   in    r9, res[r8]         // c ? address
   in    r3, res[r8]         // c ? value
-  add   r9, r9, r2          // address = address + offset
+  add   r9, r9, r10          // address = address + offset
   divs  r6, r9, r5          // dest = address / leafStorage
   rems  r9, r9, r5          // address = address % leafStorage
   eq    r11, r6, 0
