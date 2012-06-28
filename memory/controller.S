@@ -28,7 +28,7 @@ init:
   
   // Initialise pointers
   ldaw  r4, dp[data]
-  ldw   r5, cp[leafStorage]
+  ldw   r5, dp[leafStorage]
 
   // Get tree, codebuffer, labval and leaf chanends
   // Setup event vectors on channels
@@ -56,7 +56,6 @@ init:
   // Synchronise with all remote leaves
   ldc   r10, LEAF_OFFSET+1
   ldc   r11, NUM_LEAVES+LEAF_OFFSET
-  ldw   r3, dp[leafChan]
 syncLoop:
   eq    r9, r10, r11
   bt    r9, exitSyncLoop
@@ -79,9 +78,9 @@ exitSyncLoop:
   // r5: leaf storage
   // r6: destination
   // r7: request
-  // r8: chanend current:
+  // r8: chanend current
   // r9: address
-  // r10: address offset
+  // r10: address offset current
   // r11: scratch
 
 initChans:
@@ -118,12 +117,12 @@ treeChanAccess:
 
 codebufferChanAccess:
   mov r8, r1
-  ldw r10, cp[codebufferOffset]
+  ldw r10, dp[codebufferOffset]
   bu serviceAccess
 
 labvalChanAccess:
   mov r8, r2
-  ldw r10, cp[labvalOffset]
+  ldw r10, dp[labvalOffset]
   bu serviceAccess
 
 // Service a memory access
@@ -168,8 +167,11 @@ remoteRead:
 
 write:
   in    r9, res[r8]         // c ? address
-  in    r7, res[r8]        // c ? value (r7)
+  in    r7, res[r8]         // c ? value (r7)
   add   r9, r9, r10         // address = address + offset
+  /*ldw   r11, dp[totalStorage]
+  lss   r11, r9, r11
+  ecallf r11*/
   divs  r6, r9, r5          // dest = address / leafStorage
   rems  r9, r9, r5          // address = address % leafStorage
   eq    r11, r6, 0
@@ -197,7 +199,7 @@ exit:
   // Halt all remote leaves
   ldc   r11, LEAF_OFFSET+1
   ldc   r10, NUM_LEAVES+LEAF_OFFSET
-  ldw   r3, cp[leafChan]
+  ldw   r3, dp[leafChan]
 haltLoop:
   eq    r9, r11, r10
   bt    r9, exitHaltLoop
@@ -226,6 +228,18 @@ leafChan:
   .space BYTES_PER_WORD
   .set leafChan.globound, BYTES_PER_WORD
 
+treeSize:
+  .word TREE_SIZE
+  .set treeSize.globound, BYTES_PER_WORD
+
+codebufferSize:
+  .word CODEBUFFER_SIZE
+  .set codebufferSize.globound, BYTES_PER_WORD
+
+labvalSize:
+  .word LABVAL_SIZE
+  .set labvalSize.globound, BYTES_PER_WORD
+
 treeOffset:
   .word 0
   .set treeOffset.globound, BYTES_PER_WORD
@@ -242,8 +256,17 @@ leafStorage:
   .word LEAF_STORAGE
   .set leafStorage.globound, BYTES_PER_WORD
 
+totalStorage:
+  .word TOTAL_STORAGE
+  .set totalStorage.globound, BYTES_PER_WORD
+
 data:
   .space LEAF_STORAGE*BYTES_PER_WORD
   .globl data.globound
   .set data.globound, LEAF_STORAGE*BYTES_PER_WORD
+
+/*data:
+  .space 100*BYTES_PER_WORD
+  .globl data.globound
+  .set data.globound, 100*BYTES_PER_WORD*/
 

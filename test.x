@@ -41,6 +41,7 @@ proc main() is
   { v := labval[i];
     i := i + 1
   };
+  i := 0;
   tree !! ct_eom
 }
 

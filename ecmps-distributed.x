@@ -467,7 +467,8 @@ var frm_size;
 var frm_start;
 
 val labval_size  = 4000;
-var labval[labval_size];
+%var labval[labval_size];
+chan labval;
 
 val cb_size      = 20000;
 val cbf_lab      = 1 << 18;

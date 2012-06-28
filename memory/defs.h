@@ -35,7 +35,7 @@
 
 #define TREE_SIZE                70000
 #define CODEBUFFER_SIZE          20000
-#define LABVAL_SIZE              4000
+#define LABVAL_SIZE              20000
 #define TOTAL_STORAGE            (TREE_SIZE+CODEBUFFER_SIZE+LABVAL_SIZE)
 #define LEAF_OFFSET              1
 #define NUM_LEAVES               (NUM_CORES-LEAF_OFFSET)
