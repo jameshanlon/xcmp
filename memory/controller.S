@@ -38,12 +38,12 @@ init:
   setc res[r0], XS1_SETC_IE_MODE_EVENT
   eeu  res[r0]
   getr  r1, XS1_RES_TYPE_CHANEND
-  ldap r11, codebufferChanAccess
+  ldap r11, labvalChanAccess
   setv res[r1], r11
   setc res[r1], XS1_SETC_IE_MODE_EVENT
   eeu  res[r1]
   getr  r2, XS1_RES_TYPE_CHANEND
-  ldap r11, labvalChanAccess
+  ldap r11, codebufferChanAccess
   setv res[r2], r11
   setc res[r2], XS1_SETC_IE_MODE_EVENT
   eeu  res[r2]
@@ -90,7 +90,7 @@ initChans:
   outct res[r0], CT_END
   out   res[r0], r0
   
-  // Initilise with the client codebuffer channel
+  // Initilise with the client labval channel
   ldc   r10, 0x100
   ldc   r11, XS1_RES_TYPE_CHANEND
   or    r11, r11, r10
@@ -98,7 +98,7 @@ initChans:
   outct res[r1], CT_END
   out   res[r1], r1
 
-  // Initilise with the client labval channel
+  // Initilise with the client codebuffer channel
   ldc   r10, 0x200
   ldc   r11, XS1_RES_TYPE_CHANEND
   or    r11, r11, r10
@@ -117,17 +117,17 @@ treeChanAccess:
   stw r11, dp[currentSize]
   bu serviceAccess
 
-codebufferChanAccess:
+labvalChanAccess:
   mov r8, r1
-  ldw r10, dp[codebufferOffset]
-  ldw r11, dp[codebufferSize]
+  ldw r10, dp[labvalOffset]
+  ldw r11, dp[labvalSize]
   stw r11, dp[currentSize]
   bu serviceAccess
 
-labvalChanAccess:
+codebufferChanAccess:
   mov r8, r2
-  ldw r10, dp[labvalOffset]
-  ldw r11, dp[labvalSize]
+  ldw r10, dp[codebufferOffset]
+  ldw r11, dp[codebufferSize]
   stw r11, dp[currentSize]
   bu serviceAccess
 
@@ -142,6 +142,9 @@ serviceAccess:
 
 read:
   in    r9, res[r8]         // c ? address
+  ldw   r11, dp[currentSize]
+  lss   r11, r9, r11
+  ecallf r11
   add   r9, r9, r10         // address = address + offset
   divs  r6, r9, r5          // dest = address / leafStorage
   rems  r9, r9, r5          // address = address % leafStorage
@@ -174,9 +177,9 @@ remoteRead:
 write:
   in    r9, res[r8]         // c ? address
   in    r7, res[r8]         // c ? value (r7)
-  /*ldw   r11, dp[currentStorage]
+  ldw   r11, dp[currentSize]
   lss   r11, r9, r11
-  ecallf r11*/
+  ecallf r11
   add   r9, r9, r10         // address = address + offset
   divs  r6, r9, r5          // dest = address / leafStorage
   rems  r9, r9, r5          // address = address % leafStorage
@@ -238,25 +241,25 @@ treeSize:
   .word TREE_SIZE
   .set treeSize.globound, BYTES_PER_WORD
 
-codebufferSize:
-  .word CODEBUFFER_SIZE
-  .set codebufferSize.globound, BYTES_PER_WORD
-
 labvalSize:
   .word LABVAL_SIZE
   .set labvalSize.globound, BYTES_PER_WORD
+
+codebufferSize:
+  .word CODEBUFFER_SIZE
+  .set codebufferSize.globound, BYTES_PER_WORD
 
 treeOffset:
   .word 0
   .set treeOffset.globound, BYTES_PER_WORD
 
-codebufferOffset:
-  .word TREE_SIZE
-  .set codebufferOffset.globound, BYTES_PER_WORD
-
 labvalOffset:
-  .word TREE_SIZE+CODEBUFFER_SIZE
+  .word TREE_SIZE
   .set labvalOffset.globound, BYTES_PER_WORD
+
+codebufferOffset:
+  .word TREE_SIZE+LABVAL_SIZE
+  .set codebufferOffset.globound, BYTES_PER_WORD
 
 leafStorage:
   .word LEAF_STORAGE

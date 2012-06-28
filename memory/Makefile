@@ -27,11 +27,11 @@ container.xe: container.xc
 	export XCC_DEVICE_PATH=$(CONFIGS)
 	xcc $(COMPILE_FLAGS) $(CONFIGS)/$(CONFIG) $< -o $@
             
-controller.xe: startup_S.o startup_xc.o controller.o 
+controller.xe: startup_S.o startup_xc.o controller.o defs.h 
 	@echo 'Generating controller executable...'
-	xcc $^ -o $@ $(SC_TARGET) $(LINK_FLAGS)
+	xcc $^ -o $@ -DNUM_CORES=$(NUM_CORES) $(SC_TARGET) $(LINK_FLAGS)
 
-leaf.xe: startup_S.o startup_xc.o leaf.o
+leaf.xe: startup_S.o startup_xc.o leaf.o defs.h
 	@echo 'Generating leaf executable...'
 	xcc $^ -o $@ -DNUM_CORES=$(NUM_CORES) $(SC_TARGET) $(LINK_FLAGS)
 

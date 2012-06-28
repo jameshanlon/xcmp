@@ -6866,11 +6866,11 @@ proc outelfhdr() is
   outbin(2028); outbin(0);
  
   % ldapf r11, 0x8FFFC ; or r0, r0, r0 ; setsp r11
-  outbin((30 << 11) or 255);
-  outbin(((i_ldapf + 52) << 10) or 1020);
+  %outbin((30 << 11) or 255);
+  %outbin(((i_ldapf + 52) << 10) or 1020);
   % (2^16-16)/2 = 0b11111 1111111000
-  %outbin((30 << 11) or 31);
-  %outbin(((i_ldapf + 52) << 10) or 1016);
+  outbin((30 << 11) or 31);
+  outbin(((i_ldapf + 52) << 10) or 1016);
   outbin(8 << 11);
   outbin((5 << 11) or (31 << 6) or (3 << 4) or reg_gdest); 
  
