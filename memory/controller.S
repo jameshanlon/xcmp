@@ -113,16 +113,22 @@ loop:
 treeChanAccess:
   mov r8, r0
   ldc r10, 0
+  ldw r11, dp[treeSize]
+  stw r11, dp[currentSize]
   bu serviceAccess
 
 codebufferChanAccess:
   mov r8, r1
   ldw r10, dp[codebufferOffset]
+  ldw r11, dp[codebufferSize]
+  stw r11, dp[currentSize]
   bu serviceAccess
 
 labvalChanAccess:
   mov r8, r2
   ldw r10, dp[labvalOffset]
+  ldw r11, dp[labvalSize]
+  stw r11, dp[currentSize]
   bu serviceAccess
 
 // Service a memory access
@@ -168,10 +174,10 @@ remoteRead:
 write:
   in    r9, res[r8]         // c ? address
   in    r7, res[r8]         // c ? value (r7)
-  add   r9, r9, r10         // address = address + offset
-  /*ldw   r11, dp[totalStorage]
+  /*ldw   r11, dp[currentStorage]
   lss   r11, r9, r11
   ecallf r11*/
+  add   r9, r9, r10         // address = address + offset
   divs  r6, r9, r5          // dest = address / leafStorage
   rems  r9, r9, r5          // address = address % leafStorage
   eq    r11, r6, 0
@@ -259,6 +265,10 @@ leafStorage:
 totalStorage:
   .word TOTAL_STORAGE
   .set totalStorage.globound, BYTES_PER_WORD
+
+currentSize:
+  .word 0
+  .set currentSize.globound, BYTES_PER_WORD
 
 data:
   .space LEAF_STORAGE*BYTES_PER_WORD

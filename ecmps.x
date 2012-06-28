@@ -521,6 +521,8 @@ proc main() is
       initbuffer();
   
       generate();
+      prints("%% num labels: "); printn(labelcount); newline(); 
+      prints("%% cb_bufferp: "); printn(cb_bufferp); newline(); 
 
       tree !! ct_eom;
 
