@@ -337,7 +337,7 @@ val bytesperword = 4;
 
 var outstream;
 
-var stree[treemax];
+%var stree[treemax];
 chan tree;
 
 var treep;
@@ -531,30 +531,30 @@ proc main() is
   %}
 }
 
-proc treeserve() is
-  var running;
-  var request;
-  var addr;
-  var data;
-{ running := true;
-  while running do
-  { tree$ ?? request;
-    if request = 3
-    then
-    { tree$ ? addr;
-      tree$ ! stree[addr]
-    }
-    else 
-    if request = 4 
-    then
-    { tree$ ? addr;
-      tree$ ? data;
-      stree[addr] := data 
-    }
-    else
-      running := false
-  }
-}
+%proc treeserve() is
+%  var running;
+%  var request;
+%  var addr;
+%  var data;
+%{ running := true;
+%  while running do
+%  { tree$ ?? request;
+%    if request = 3
+%    then
+%    { tree$ ? addr;
+%      tree$ ! stree[addr]
+%    }
+%    else 
+%    if request = 4 
+%    then
+%    { tree$ ? addr;
+%      tree$ ? data;
+%      stree[addr] := data 
+%    }
+%    else
+%      running := false
+%  }
+%}
 
 
 proc newline() is putval('\n')

@@ -6,17 +6,14 @@ xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
   <Name>XS1-G4B-FB512</Name>
 
   <Declarations>
-    <Declaration>core stdcore[4]</Declaration>
+    <Declaration>core stdcore[1]</Declaration>
   </Declarations>
 
   <Packages>
-    <Package id="0" Type="4core">
+    <Package id="0" Type="1core">
       <Nodes>
-        <Node Id="0" InPackageId="0" Type="4core">
+        <Node Id="0" InPackageId="0" Type="1core">
           <Core Number="0" Reference="stdcore[0]"/>
-          <Core Number="1" Reference="stdcore[1]"/>
-          <Core Number="2" Reference="stdcore[2]"/>
-          <Core Number="3" Reference="stdcore[3]"/>
         </Node>
       </Nodes>
     </Package>

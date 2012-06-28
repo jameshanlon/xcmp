@@ -65,8 +65,9 @@ write:
   bu    loop
 
 exit:  
-  ldc   r0, 0
-  bl    _exit
+  //ldc   r0, 0
+  //bl    _exit
+  waiteu
 
 .section .dp.data, "awd", @progbits
   .align BYTES_PER_WORD
@@ -78,7 +79,7 @@ sp:
   .set sp.globound, BYTES_PER_WORD
 
 data:
-  .space 1000*BYTES_PER_WORD
+  .space LEAF_STORAGE*BYTES_PER_WORD
   .globl data.globound
-  .set data.globound, 1000*BYTES_PER_WORD
+  .set data.globound, LEAF_STORAGE*BYTES_PER_WORD
 

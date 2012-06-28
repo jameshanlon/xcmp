@@ -26,48 +26,55 @@ init:
   bl resetChanends
   //bl initThreads
   
-  // Get tree, cb and leaf chanends
-  getr  r0, XS1_RES_TYPE_CHANEND
-  getr  r1, XS1_RES_TYPE_CHANEND
-  getr  r2, XS1_RES_TYPE_CHANEND
-  stw   r2, dp[leafChan]
-
   // Initialise pointers
   ldaw  r4, dp[data]
   ldw   r5, cp[leafStorage]
 
+  // Get tree, codebuffer, labval and leaf chanends
   // Setup event vectors on channels
+  getr r0, XS1_RES_TYPE_CHANEND
   ldap r11, treeChanAccess
   setv res[r0], r11
   setc res[r0], XS1_SETC_IE_MODE_EVENT
   eeu  res[r0]
-  ldap r11, cbChanAccess
+  getr  r1, XS1_RES_TYPE_CHANEND
+  ldap r11, codebufferChanAccess
   setv res[r1], r11
   setc res[r1], XS1_SETC_IE_MODE_EVENT
   eeu  res[r1]
+  getr  r2, XS1_RES_TYPE_CHANEND
+  ldap r11, labvalChanAccess
+  setv res[r2], r11
+  setc res[r2], XS1_SETC_IE_MODE_EVENT
+  eeu  res[r2]
   setsr XS1_SR_EEBLE_MASK
-  
+ 
+  // Get a chanend to talk to leaves
+  getr  r3, XS1_RES_TYPE_CHANEND
+  stw   r3, dp[leafChan]
+
   // Synchronise with all remote leaves
   ldc   r10, LEAF_OFFSET+1
   ldc   r11, NUM_LEAVES+LEAF_OFFSET
+  ldw   r3, dp[leafChan]
 syncLoop:
   eq    r9, r10, r11
   bt    r9, exitSyncLoop
   shl   r9, r10, 16
   ldc   r8, XS1_RES_TYPE_CHANEND 
   or    r8, r9, r8         // dest = dest<<16 | XS1_TYPE_CHANEND
-  setd  res[r2], r8
-  out   res[r2], r2
-  outct res[r2], CT_END
-  chkct res[r2], CT_END
+  setd  res[r3], r8
+  out   res[r3], r3
+  outct res[r3], CT_END
+  chkct res[r3], CT_END
   add   r10, r10, 1
   bu    syncLoop
 exitSyncLoop:
 
   // r0: chanend tree
-  // r1: chanend cb
-  // r2: chanend leaf
-  // r3: value
+  // r1: chanend codebuffer
+  // r2: chanend labval
+  // r3: chanend leaf
   // r4: data area pointer
   // r5: leaf storage
   // r6: destination
@@ -84,13 +91,21 @@ initChans:
   outct res[r0], CT_END
   out   res[r0], r0
   
-  // Initilise with the client cb channel
+  // Initilise with the client codebuffer channel
   ldc   r10, 0x100
   ldc   r11, XS1_RES_TYPE_CHANEND
   or    r11, r11, r10
   setd  res[r1], r11
   outct res[r1], CT_END
   out   res[r1], r1
+
+  // Initilise with the client labval channel
+  ldc   r10, 0x200
+  ldc   r11, XS1_RES_TYPE_CHANEND
+  or    r11, r11, r10
+  setd  res[r2], r11
+  outct res[r2], CT_END
+  out   res[r2], r2
 
 loop:
   waiteu
@@ -101,9 +116,15 @@ treeChanAccess:
   ldc r10, 0
   bu serviceAccess
 
-cbChanAccess:
+codebufferChanAccess:
   mov r8, r1
-  ldw r10, cp[treeSize]
+  ldw r10, cp[codebufferOffset]
+  bu serviceAccess
+
+labvalChanAccess:
+  mov r8, r2
+  ldw r10, cp[labvalOffset]
+  bu serviceAccess
 
 // Service a memory access
 serviceAccess:
@@ -116,13 +137,13 @@ serviceAccess:
 
 read:
   in    r9, res[r8]         // c ? address
-  add   r9, r9, r10          // address = address + offset
+  add   r9, r9, r10         // address = address + offset
   divs  r6, r9, r5          // dest = address / leafStorage
   rems  r9, r9, r5          // address = address % leafStorage
   eq    r11, r6, 0
   bf    r11, remoteRead     // if dest == 0 then localwrite else remotewrite
   
-localread:
+localRead:
   ldw   r11, r4[r9]
   out   res[r8], r11        // c ! data[address]
   bu    loop
@@ -135,27 +156,27 @@ remoteRead:
   or    r6, r6, r11         // r6 (dest) = dest<<16 | XS1_TYPE_CHANEND
  
   // Perform the write
-  setd  res[r2], r6
-  outct res[r2], CT_READ    // m ! CT_WRITE
-  out   res[r2], r9         // m ! address
-  in    r11, res[r2]        // m ? value
-  outct res[r2], CT_END     // m ! CT_END
-  chkct res[r2], CT_END     // m ? CT_END
+  setd  res[r3], r6
+  outct res[r3], CT_READ    // m ! CT_WRITE
+  out   res[r3], r9         // m ! address
+  in    r11, res[r3]        // m ? value
+  outct res[r3], CT_END     // m ! CT_END
+  chkct res[r3], CT_END     // m ? CT_END
   
   out   res[r8], r11        // c ! data[address]
   bu    loop
 
 write:
   in    r9, res[r8]         // c ? address
-  in    r3, res[r8]         // c ? value
-  add   r9, r9, r10          // address = address + offset
+  in    r7, res[r8]        // c ? value (r7)
+  add   r9, r9, r10         // address = address + offset
   divs  r6, r9, r5          // dest = address / leafStorage
   rems  r9, r9, r5          // address = address % leafStorage
   eq    r11, r6, 0
   bf    r11, remoteWrite    // if dest == 0 then localwrite else remotewrite
  
-localwrite:
-  stw   r3, r4[r9]          // data[address] = value
+localWrite:
+  stw   r7, r4[r9]          // data[address] = value
   bu loop
 
 remoteWrite:
@@ -165,26 +186,26 @@ remoteWrite:
   ldc   r11, XS1_RES_TYPE_CHANEND 
   or    r6, r6, r11         // dest = (dest<<16) | XS1_TYPE_CHANEND
   // Perform the write
-  setd  res[r2], r6
-  outct res[r2], CT_WRITE   // m ! CT_WRITE
-  out   res[r2], r9         // m ! address
-  out   res[r2], r3         // m ! value
-  outct res[r2], CT_END     // m ! CT_END
+  setd  res[r3], r6
+  outct res[r3], CT_WRITE   // m ! CT_WRITE
+  out   res[r3], r9         // m ! address
+  out   res[r3], r7         // m ! value
+  outct res[r3], CT_END     // m ! CT_END
   bu loop
 
 exit:
   // Halt all remote leaves
-  ldc   r11, LEAF_OFFSET
-  ldc   r10, NUM_LEAVES+LEAF_OFFSET-2
-  ldw   r2, cp[leafChan]
+  ldc   r11, LEAF_OFFSET+1
+  ldc   r10, NUM_LEAVES+LEAF_OFFSET
+  ldw   r3, cp[leafChan]
 haltLoop:
   eq    r9, r11, r10
   bt    r9, exitHaltLoop
-  shl   r10, r11, 16
-  ldc   r11, XS1_RES_TYPE_CHANEND 
-  or    r10, r10, r11         // dest = dest<<16 | XS1_TYPE_CHANEND
-  setd  res[r2], r10
-  outct res[r2], CT_END
+  shl   r8, r11, 16
+  ldc   r7, XS1_RES_TYPE_CHANEND 
+  or    r8, r8, r7         // dest = dest<<16 | XS1_TYPE_CHANEND
+  setd  res[r3], r8
+  outct res[r3], CT_END
   add   r11, r11, 1
   bu    haltLoop
 exitHaltLoop:
@@ -205,20 +226,24 @@ leafChan:
   .space BYTES_PER_WORD
   .set leafChan.globound, BYTES_PER_WORD
 
-treeSize:
-  .word TREE_SIZE
-  .set treeSize.globound, BYTES_PER_WORD
+treeOffset:
+  .word 0
+  .set treeOffset.globound, BYTES_PER_WORD
 
-cbSize:
-  .word CB_SIZE
-  .set cbSize.globound, BYTES_PER_WORD
+codebufferOffset:
+  .word TREE_SIZE
+  .set codebufferOffset.globound, BYTES_PER_WORD
+
+labvalOffset:
+  .word TREE_SIZE+CODEBUFFER_SIZE
+  .set labvalOffset.globound, BYTES_PER_WORD
 
 leafStorage:
   .word LEAF_STORAGE
   .set leafStorage.globound, BYTES_PER_WORD
 
 data:
-  .space 1000*BYTES_PER_WORD
+  .space LEAF_STORAGE*BYTES_PER_WORD
   .globl data.globound
-  .set data.globound, 1000*BYTES_PER_WORD
+  .set data.globound, LEAF_STORAGE*BYTES_PER_WORD
 
