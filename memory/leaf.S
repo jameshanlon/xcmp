@@ -35,6 +35,12 @@ _start:
   getr r0, 2 // This must be channel end 0
   ldaw r4, dp[data]
 
+  // Synchronise with the controller
+  in    r11, res[r0]
+  setd  res[r0], r11
+  chkct res[r0], CT_END
+  outct res[r0], CT_END
+
 loop:
   inct  r1, res[r0]
   eq    r11, r1, CT_READ
