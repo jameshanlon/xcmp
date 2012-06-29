@@ -1,6 +1,11 @@
+% This version is executed on AXE
+
+%port instream      : (8<<16);
+%port messagestream : (8<<16);
+%port binstream     : (8<<16) or (2 << 8);
 port instream      : 0;
 port messagestream : 0;
-port binstream     : 2 << 8;
+port binstream     : (2 << 8);
 
 val EOF           = 255;
 

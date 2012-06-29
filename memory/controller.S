@@ -54,14 +54,27 @@ init:
   stw   r3, dp[leafChan]
 
   // Synchronise with all remote leaves
+  // r10: leaf location
+  // r11: max leaf location
   ldc   r10, LEAF_OFFSET+1
   ldc   r11, NUM_LEAVES+LEAF_OFFSET
 syncLoop:
   eq    r9, r10, r11
   bt    r9, exitSyncLoop
+#if defined(XS1_L)
   shl   r9, r10, 16
   ldc   r8, XS1_RES_TYPE_CHANEND 
   or    r8, r9, r8         // dest = dest<<16 | XS1_TYPE_CHANEND
+#elif defined(XS1_G)
+  ldc   r8, CORES_PER_NODE
+  rems  r9, r10, r8         
+  shl   r9, r9, 16        // core = (dest%CORES_PER_NODE)<<16
+  divs  r7, r10, r8         
+  bitrev r7, r7           // node = bitrev(dest/CORES_PER_NODE)
+  ldc   r8, XS1_RES_TYPE_CHANEND 
+  or    r8, r9, r8         
+  or    r8, r7, r8         // dest = node | core | XS1_TYPE_CHANEND
+#endif
   setd  res[r3], r8
   out   res[r3], r3
   outct res[r3], CT_END
@@ -159,9 +172,20 @@ localRead:
 remoteRead:
   // Calculate dest, address and dest channel ID
   add   r6, r6, LEAF_OFFSET // dest += LEAF_OFFSET
-  shl   r6, r6, 16
+#if defined(XS1_L)
+  shl   r6, r6, 16          // core = dest<<16
   ldc   r11, XS1_RES_TYPE_CHANEND 
-  or    r6, r6, r11         // r6 (dest) = dest<<16 | XS1_TYPE_CHANEND
+  or    r6, r6, r11         // dest = core | XS1_TYPE_CHANEND
+#elif defined(XS1_G)
+  ldc   r8, CORES_PER_NODE
+  rems  r11, r6, r8         
+  shl   r11, r11, 16        // core = (dest%CORES_PER_NODE)<<16
+  divs  r10, r6, r8         
+  bitrev r10, r10           // node = bitrev(dest/CORES_PER_NODE)
+  ldc   r8, XS1_RES_TYPE_CHANEND 
+  or    r6, r10, r8         
+  or    r6, r11, r6         // dest = node | core | XS1_TYPE_CHANEND
+#endif
  
   // Perform the write
   setd  res[r3], r6
@@ -193,9 +217,20 @@ localWrite:
 remoteWrite:
   // Calculate dest, address and dest channel ID
   add   r6, r6, LEAF_OFFSET // dest += LEAF_OFFSET
-  shl   r6, r6, 16
+#if defined(XS1_L)
+  shl   r6, r6, 16          // core = dest<<16
   ldc   r11, XS1_RES_TYPE_CHANEND 
-  or    r6, r6, r11         // dest = (dest<<16) | XS1_TYPE_CHANEND
+  or    r6, r6, r11         // dest = core | XS1_TYPE_CHANEND
+#elif defined(XS1_G)
+  ldc   r8, CORES_PER_NODE
+  rems  r11, r6, r8         
+  shl   r11, r11, 16        // core = (dest%CORES_PER_NODE)<<16
+  divs  r10, r6, r8         
+  bitrev r10, r10           // node = bitrev(dest/CORES_PER_NODE)
+  ldc   r8, XS1_RES_TYPE_CHANEND 
+  or    r6, r10, r8         
+  or    r6, r11, r6         // dest = node | core | XS1_TYPE_CHANEND
+#endif
   // Perform the write
   setd  res[r3], r6
   outct res[r3], CT_WRITE   // m ! CT_WRITE
@@ -206,18 +241,29 @@ remoteWrite:
 
 exit:
   // Halt all remote leaves
-  ldc   r11, LEAF_OFFSET+1
-  ldc   r10, NUM_LEAVES+LEAF_OFFSET
+  ldc   r10, LEAF_OFFSET+1
+  ldc   r11, NUM_LEAVES+LEAF_OFFSET
   ldw   r3, dp[leafChan]
 haltLoop:
-  eq    r9, r11, r10
+  eq    r9, r10, r11
   bt    r9, exitHaltLoop
-  shl   r8, r11, 16
-  ldc   r7, XS1_RES_TYPE_CHANEND 
-  or    r8, r8, r7         // dest = dest<<16 | XS1_TYPE_CHANEND
+#if defined(XS1_L)
+  shl   r9, r10, 16
+  ldc   r8, XS1_RES_TYPE_CHANEND 
+  or    r8, r9, r8         // dest = dest<<16 | XS1_TYPE_CHANEND
+#elif defined(XS1_G)
+  ldc   r8, CORES_PER_NODE
+  rems  r9, r10, r8         
+  shl   r9, r9, 16        // core = (dest%CORES_PER_NODE)<<16
+  divs  r7, r10, r8         
+  bitrev r7, r7           // node = bitrev(dest/CORES_PER_NODE)
+  ldc   r8, XS1_RES_TYPE_CHANEND 
+  or    r8, r9, r8         
+  or    r8, r7, r8         // dest = node | core | XS1_TYPE_CHANEND
+#endif
   setd  res[r3], r8
   outct res[r3], CT_END
-  add   r11, r11, 1
+  add   r10, r10, 1
   bu    haltLoop
 exitHaltLoop:
 

@@ -1,5 +1,5 @@
 PROGRAM=xfastsim
-CFLAGS=-O4
+CFLAGS=-O4 -g
 OBJS=
 
 all: $(PROGRAM)
@@ -11,7 +11,7 @@ all: $(PROGRAM)
 # Rules for generating the executables.
 $(PROGRAM): xfastsim1.c $(OBJS)
 	@echo 'Generating executable ...'
-	gcc $^ -o $@ 
+	gcc $(CFLAGS) $^ -o $@ 
 
 .PHONY:
 	dump	

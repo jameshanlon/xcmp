@@ -347,22 +347,22 @@
 	</Links>
 
 	<JTAGChain>
-		<JTAGDevice Nodeid="0"/>
-		<JTAGDevice Nodeid="1"/>
+		<JTAGDevice Nodeid="10"/>
+		<JTAGDevice Nodeid="14"/>
+		<JTAGDevice Nodeid="6"/>
 		<JTAGDevice Nodeid="2"/>
 		<JTAGDevice Nodeid="3"/>
-		<JTAGDevice Nodeid="4"/>
-		<JTAGDevice Nodeid="5"/>
-		<JTAGDevice Nodeid="6"/>
 		<JTAGDevice Nodeid="7"/>
-		<JTAGDevice Nodeid="8"/>
-		<JTAGDevice Nodeid="9"/>
-		<JTAGDevice Nodeid="10"/>
-		<JTAGDevice Nodeid="11"/>
-		<JTAGDevice NodeId="12"/>
-		<JTAGDevice Nodeid="13"/>
-		<JTAGDevice Nodeid="14"/>
 		<JTAGDevice Nodeid="15"/>
+		<JTAGDevice Nodeid="11"/>
+		<JTAGDevice Nodeid="9"/>
+		<JTAGDevice Nodeid="13"/>
+		<JTAGDevice Nodeid="5"/>
+		<JTAGDevice Nodeid="1"/>
+		<JTAGDevice NodeId="0"/>
+		<JTAGDevice Nodeid="4"/>
+		<JTAGDevice Nodeid="12"/>
+		<JTAGDevice Nodeid="8"/>
 	</JTAGChain>
 
 </Network>

@@ -63,10 +63,10 @@
 	</Links>
 
     <JTAGChain>
-		<JTAGDevice Nodeid="2"/>
-		<JTAGDevice Nodeid="3"/>
+		<JTAGDevice Nodeid="0"/>
 		<JTAGDevice Nodeid="1"/>
-		<JTAGDevice NodeId="0"/>
+		<JTAGDevice Nodeid="2"/>
+		<JTAGDevice NodeId="3"/>
     </JTAGChain>
 
 </Network>
