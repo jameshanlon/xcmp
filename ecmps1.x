@@ -4608,8 +4608,8 @@ proc arrayassign(val dest, val sourcereg) is
       rsim_free[basereg] := false;
       subreg := movetoanyreg(subscript);
       genrus(i_outcti, basereg, ct_write);
-      gen2r(i_out, basereg, subreg); 
-      gen2r(i_out, basereg, sourcereg);
+      gen2r(i_out, subreg, basereg); 
+      gen2r(i_out, sourcereg, basereg);
       a_freetempreg(subreg)
     } 
     else
@@ -4892,7 +4892,7 @@ proc genoutput(val list, val cchan) is
   }
   else
   { reg := movetoanyreg(list);
-    gen2r(i_out, cchan, reg);
+    gen2r(i_out, reg, cchan);
     a_freetempreg(reg) 
   }
 }
@@ -5383,7 +5383,7 @@ proc movetoreg(val reg, val x) is
     { rightreg := moveop1toreg(reg, right, left);
       leftreg := moveop2toreg(reg, rightreg, left);
       genrus(i_outcti, leftreg, ct_read);
-      gen2r(i_out, leftreg, rightreg);
+      gen2r(i_out, rightreg, leftreg);
       gen2r(i_in, reg, leftreg);
       a_freetempregbut(reg, leftreg);
       a_freetempregbut(reg, rightreg)

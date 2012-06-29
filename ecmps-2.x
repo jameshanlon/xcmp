@@ -1,4 +1,10 @@
-% This version is executed on AXE
+% This version contains changes to behaviour of the compiler (not the generated
+% code) 
+%  - removal of server
+%  - tree, labvals and codebuffer as chans
+%  - reduction of names_[ntd], consts and strings array length to 700 
+% It also potentially 'undoes' anything done in the previous phase. To run on
+% xfastsim
 
 %port instream      : (8<<16);
 %port messagestream : (8<<16);
@@ -518,50 +524,21 @@ val ct_write      = #4;
 val sp_on         = #8;
 
 proc main() is
-{ %treeserve() 
-  %& { 
-      selectoutput(messagestream);  
+{ selectoutput(messagestream);  
 
-      formtree();
-      prints("%% tree size: "); printn(treep); newline(); 
+  formtree();
+  prints("%% tree size: "); printn(treep); newline(); 
 
-      initbuffer();
-  
-      generate();
+  initbuffer();
 
-      tree !! ct_eom%;
+  generate();
 
-      prints("%% program size: "); printn(codesize * 2); newline();
-  
-      prints("%% size: "); printn((binsize * 2) + (arrayspace * 4)); newline() 
-  %}
+  tree !! ct_eom;
+
+  prints("%% program size: "); printn(codesize * 2); newline();
+
+  prints("%% size: "); printn((binsize * 2) + (arrayspace * 4)); newline() 
 }
-
-%proc treeserve() is
-%  var running;
-%  var request;
-%  var addr;
-%  var data;
-%{ running := true;
-%  while running do
-%  { tree$ ?? request;
-%    if request = 3
-%    then
-%    { tree$ ? addr;
-%      tree$ ! stree[addr]
-%    }
-%    else 
-%    if request = 4 
-%    then
-%    { tree$ ? addr;
-%      tree$ ? data;
-%      stree[addr] := data 
-%    }
-%    else
-%      running := false
-%  }
-%}
-
 
 proc newline() is putval('\n')
 
@@ -4617,8 +4594,8 @@ proc arrayassign(val dest, val sourcereg) is
       rsim_free[basereg] := false;
       subreg := movetoanyreg(subscript);
       genrus(i_outcti, basereg, ct_write);
-      gen2r(i_out, subreg, basereg); 
-      gen2r(i_out, sourcereg, basereg);
+      gen2r(i_out, basereg, subreg); 
+      gen2r(i_out, basereg, sourcereg);
       a_freetempreg(subreg)
     } 
     else
@@ -4901,7 +4878,7 @@ proc genoutput(val list, val cchan) is
   }
   else
   { reg := movetoanyreg(list);
-    gen2r(i_out, reg, cchan);
+    gen2r(i_out, cchan, reg);
     a_freetempreg(reg) 
   }
 }
@@ -5392,7 +5369,7 @@ proc movetoreg(val reg, val x) is
     { rightreg := moveop1toreg(reg, right, left);
       leftreg := moveop2toreg(reg, rightreg, left);
       genrus(i_outcti, leftreg, ct_read);
-      gen2r(i_out, rightreg, leftreg);
+      gen2r(i_out, leftreg, rightreg);
       gen2r(i_in, reg, leftreg);
       a_freetempregbut(reg, leftreg);
       a_freetempregbut(reg, rightreg)
@@ -6853,16 +6830,12 @@ proc outelfhdr() is
   binsize := binsize + (frm_size * 2);
 
   outbin(binsize >> 1);  outbin(0);
-  % waiteu for exceptions
-  %outbin(2028); outbin(0);
  
-  % ldapf r11, 0x8FFFC ; or r0, r0, r0 ; setsp r11
   outbin((30 << 11) or 255);
   outbin(((i_ldapf + 52) << 10) or 1020);  
   outbin(8 << 11);
   outbin((5 << 11) or (31 << 6) or (3 << 4) or reg_gdest); 
  
-  % Set dp
   if (frm_start > 1023)
   then
   { outbin((30 << 11) or ((frm_start - 2) >> 10));

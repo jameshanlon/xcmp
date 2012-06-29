@@ -155,9 +155,9 @@ serviceAccess:
 
 read:
   in    r9, res[r8]         // c ? address
-  ldw   r11, dp[currentSize]
+  /*ldw   r11, dp[currentSize]
   lss   r11, r9, r11
-  ecallf r11
+  ecallf r11*/
   add   r9, r9, r10         // address = address + offset
   divs  r6, r9, r5          // dest = address / leafStorage
   rems  r9, r9, r5          // address = address % leafStorage
@@ -201,9 +201,9 @@ remoteRead:
 write:
   in    r9, res[r8]         // c ? address
   in    r7, res[r8]         // c ? value (r7)
-  ldw   r11, dp[currentSize]
+  /*ldw   r11, dp[currentSize]
   lss   r11, r9, r11
-  ecallf r11
+  ecallf r11*/
   add   r9, r9, r10         // address = address + offset
   divs  r6, r9, r5          // dest = address / leafStorage
   rems  r9, r9, r5          // address = address % leafStorage

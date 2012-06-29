@@ -1,3 +1,10 @@
+% This version contains changes to the code generation that must be executed by
+% AXE.
+%  - Switched operands on out instructions.
+%  - Added waiteu for exceptions at beginning of binary in outelfhdr
+%  - Adjusted stack to fit in 64KB in outelfhdr
+%  - Different initialisation of 'array' channels in initfrmchans
+
 port instream      : 0;
 port messagestream : 0;
 port binstream     : 2 << 8;
@@ -521,8 +528,6 @@ proc main() is
       initbuffer();
   
       generate();
-      prints("%% num labels: "); printn(labelcount); newline(); 
-      prints("%% cb_bufferp: "); printn(cb_bufferp); newline(); 
 
       tree !! ct_eom;
 
