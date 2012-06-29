@@ -1978,6 +1978,7 @@ load()
   codefile = fopen("a.bin", "rb");
   lowlength = inbin();	
   length = ((inbin() << 16) | lowlength) << 1;
+  printf("%d binary length\n", length);
   for (n = 0; n < length; n++)
     pmem[n] = inbin();
   length = length << 1;	

@@ -1,8 +1,8 @@
 SHELL          := /bin/bash
 XCC            := xcc
 LINK_FLAGS     := -O2 -nostartfiles -Xmapper --nochaninit
-NUM_CORES      := 64
-CORES_PER_NODE := 64
+NUM_CORES      := 16
+CORES_PER_NODE := 16
 SYSTEM         := XS1_L
 DEFINES        := \
   -DNUM_CORES=$(NUM_CORES) \

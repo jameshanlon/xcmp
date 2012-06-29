@@ -529,7 +529,7 @@ proc main() is
   
       generate();
 
-      tree !! ct_eom;
+      tree !! ct_eom%;
 
       prints("%% program size: "); printn(codesize * 2); newline();
   
@@ -6852,9 +6852,9 @@ proc outelfhdr() is
 
   binsize := binsize + (frm_size * 2);
 
-  %outbin(binsize >> 1);  outbin(0);
+  outbin(binsize >> 1);  outbin(0);
   % waiteu for exceptions
-  outbin(2028); outbin(0);
+  %outbin(2028); outbin(0);
  
   % ldapf r11, 0x8FFFC ; or r0, r0, r0 ; setsp r11
   outbin((30 << 11) or 255);
