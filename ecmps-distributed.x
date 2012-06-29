@@ -376,9 +376,9 @@ val reg_stack    = 13;
 val reg_data     = 14;
 val reg_glob     = 15;
 
-var names_n[1000];
-var names_t[1000];
-var names_d[1000];
+var names_n[700];
+var names_t[700];
+var names_d[700];
 
 var namep;
 var nameb;
@@ -417,12 +417,12 @@ var topvarcount;
 
 var skipnode;
 
-var consts[1000];
+var consts[700];
 var constp;
 
 var insequence;
 
-var strings[1000];
+var strings[700];
 var stringp;
 
 val g_num       = 0;
