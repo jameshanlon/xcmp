@@ -4633,6 +4633,8 @@ proc arrayassign(val dest, val sourcereg) is
       genrus(i_outcti, basereg, ct_write);
       gen2r(i_out, subreg, basereg); 
       gen2r(i_out, sourcereg, basereg);
+      % new syncronise writes so they don't overtake one another
+      genrus(i_chkcti, basereg, ct_eom); 
       a_freetempreg(subreg)
     } 
     else

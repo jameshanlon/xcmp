@@ -12,7 +12,7 @@ val tree_len = 70000;
 val labval_len = 4000;
 val codebuffer_len = 20000;
 
-val increment = 100;
+val increment = 1000;
 
 %var outstream;
 %

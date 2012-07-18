@@ -177,17 +177,17 @@ remoteRead:
   ldc   r11, XS1_RES_TYPE_CHANEND 
   or    r6, r6, r11         // dest = core | XS1_TYPE_CHANEND
 #elif defined(XS1_G)
-  ldc   r8, CORES_PER_NODE
-  rems  r11, r6, r8         
+  ldc   r10, CORES_PER_NODE
+  rems  r11, r6, r10         
   shl   r11, r11, 16        // core = (dest%CORES_PER_NODE)<<16
-  divs  r10, r6, r8         
+  divs  r10, r6, r10         
   bitrev r10, r10           // node = bitrev(dest/CORES_PER_NODE)
-  ldc   r8, XS1_RES_TYPE_CHANEND 
-  or    r6, r10, r8         
+  ldc   r6, XS1_RES_TYPE_CHANEND 
+  or    r6, r10, r6         
   or    r6, r11, r6         // dest = node | core | XS1_TYPE_CHANEND
 #endif
  
-  // Perform the write
+  // Perform the read
   setd  res[r3], r6
   outct res[r3], CT_READ    // m ! CT_WRITE
   out   res[r3], r9         // m ! address
@@ -212,7 +212,8 @@ write:
  
 localWrite:
   stw   r7, r4[r9]          // data[address] = value
-  bu loop
+  outct res[r8], CT_END     // c ! CT_END
+  bu    loop
 
 remoteWrite:
   // Calculate dest, address and dest channel ID
@@ -222,13 +223,13 @@ remoteWrite:
   ldc   r11, XS1_RES_TYPE_CHANEND 
   or    r6, r6, r11         // dest = core | XS1_TYPE_CHANEND
 #elif defined(XS1_G)
-  ldc   r8, CORES_PER_NODE
-  rems  r11, r6, r8         
+  ldc   r10, CORES_PER_NODE
+  rems  r11, r6, r10         
   shl   r11, r11, 16        // core = (dest%CORES_PER_NODE)<<16
-  divs  r10, r6, r8         
+  divs  r10, r6, r10 
   bitrev r10, r10           // node = bitrev(dest/CORES_PER_NODE)
-  ldc   r8, XS1_RES_TYPE_CHANEND 
-  or    r6, r10, r8         
+  ldc   r6, XS1_RES_TYPE_CHANEND 
+  or    r6, r10, r6
   or    r6, r11, r6         // dest = node | core | XS1_TYPE_CHANEND
 #endif
   // Perform the write
@@ -237,6 +238,8 @@ remoteWrite:
   out   res[r3], r9         // m ! address
   out   res[r3], r7         // m ! value
   outct res[r3], CT_END     // m ! CT_END
+  
+  outct res[r8], CT_END     // c ! CT_END
   bu loop
 
 exit:

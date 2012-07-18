@@ -7,7 +7,7 @@
 #define CRC_POLY    0xEDB88320
 #define CRC_INIT    0xFFFFFFFF
 #define CRC_DISABLE 0x0D15AB1E
-#define RAM_SIZE    (1 << 20)
+#define RAM_SIZE    (1 << 18)
 #define RAM_BASE    RAM_SIZE
 
 // Elf data structures

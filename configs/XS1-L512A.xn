@@ -1,15 +1,9 @@
 <?xml version="1.0" ?>
 <Network xmlns="http://www.xmos.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.xmos.com http://www.xmos.com">
-  <Type>
-    Device
-  </Type>
-  <Name>
-    XS1-L512A
-  </Name>
+  <Type>Device</Type>
+  <Name>XS1-L512A</Name>
   <Declarations>
-    <Declaration>
-      core stdcore[512]
-    </Declaration>
+    <Declaration>core stdcore[512]</Declaration>
   </Declarations>
   <Packages>
     <Package ID="0" Type="XS1-L512A">

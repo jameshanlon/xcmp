@@ -4,8 +4,9 @@ set -x
 
 # Bootstrap the compiler (>sim2)
 cp ecmps.bin a.bin && ./xfastsim < ecmps-1.x && \
-   cp sim2 a.bin && ./xfastsim < ecmps-2.x
-  #./xfastsim < broken.x
+   cp sim2 a.bin && \
+  ./xfastsim < test.x
+  #./xfastsim < ecmps-2.x
 
 # Wrap compiler binary in an ELF (>a.elf)
 ./elf/elf sim2
