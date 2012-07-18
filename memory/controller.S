@@ -102,6 +102,8 @@ initChans:
   setd  res[r0], r11
   outct res[r0], CT_END
   out   res[r0], r0
+  outct res[r0], CT_END
+  chkct res[r0], CT_END
   
   // Initilise with the client labval channel
   ldc   r10, 0x100
@@ -110,6 +112,8 @@ initChans:
   setd  res[r1], r11
   outct res[r1], CT_END
   out   res[r1], r1
+  outct res[r1], CT_END
+  chkct res[r1], CT_END
 
   // Initilise with the client codebuffer channel
   ldc   r10, 0x200
@@ -118,6 +122,8 @@ initChans:
   setd  res[r2], r11
   outct res[r2], CT_END
   out   res[r2], r2
+  outct res[r2], CT_END
+  chkct res[r2], CT_END
 
 loop:
   waiteu

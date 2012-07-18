@@ -3454,6 +3454,8 @@ proc initfrmchans(val x) is
         genrus(i_chkcti, 10, ct_eom);
         gen2r(i_in, 9, 10);
         gen2r(i_setd, 9, 10);
+        genrus(i_chkcti, 10, ct_eom);
+        genrus(i_outcti, 10, ct_eom);
         genru6(i_stwdp, 10, tree[tree[x + t_op5] + t_op3])
       %}
       %else
