@@ -47,7 +47,6 @@ init:
   setv res[r2], r11
   setc res[r2], XS1_SETC_IE_MODE_EVENT
   eeu  res[r2]
-  setsr XS1_SR_EEBLE_MASK
  
   // Get a chanend to talk to leaves
   getr  r3, XS1_RES_TYPE_CHANEND
@@ -125,6 +124,8 @@ initChans:
   outct res[r2], CT_END
   chkct res[r2], CT_END
 
+  // Enable events
+  setsr XS1_SR_EEBLE_MASK
 loop:
   waiteu
 

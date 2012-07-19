@@ -5,8 +5,8 @@ set -x
 # Bootstrap the compiler (>sim2)
 cp ecmps.bin a.bin && ./xfastsim < ecmps-1.x && \
    cp sim2 a.bin && \
-  ./xfastsim < test.x
-  #./xfastsim < ecmps-2.x
+  ./xfastsim < ecmps-2.x
+  #./xfastsim < test.x
 
 # Wrap compiler binary in an ELF (>a.elf)
 ./elf/elf sim2
@@ -21,7 +21,7 @@ fi
 xobjdump -r 0,0,a.elf a.xe
 
 if [[ $* == *-run* ]]; then
-  axe a.xe < ecmps.x > dump
+  axe a.xe < ecmps.x
   echo "dumped $(stat -c%s "dump")KB"
 fi
 
