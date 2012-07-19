@@ -24,11 +24,14 @@ for n in 8 16 32 64 128 256; do
   echo -ne $txtrst
   echo "$n cores" >> log.txt
 
-  echo "  Building distributed memory"
+  echo "  Creating memory images"
   (cd memory; make clean >> log.txt && \
-    make NUM_CORES=$n CORES_PER_NODE=$n >> log.txt) 
-  echo "  Building compiler"
+    make NUM_CORES=$n CORES_PER_NODE=$n >> log.txt)
+  echo "  Creating compiler image"
   bash build.sh &>> log.txt
+  echo -ne "  Building XE "
+  python xebuilder.py $n a.elf memory/core1.elf memory/core2.elf
+  echo "($(($(stat -c%s "a.xe")/1024)) KB)"
   echo "  Running simulation"
   echo -ne $txtorg
   axe a.xe -S -c configs/$n-2dmesh.cfg < ecmps1.x 

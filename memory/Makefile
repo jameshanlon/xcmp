@@ -14,7 +14,7 @@ CONFIGS        := ../configs
 CONFIG         := XS1-L$(NUM_CORES)A.xn
 #CONFIG         := XMP-$(NUM_CORES).xn
 
-all: a.xe 
+all: controller.xe leaf.xe core1.elf core2.elf
 
 startup_S.o: startup.S
 	$(COMPILE_XCC) $< -o $@
@@ -41,20 +41,30 @@ leaf.xe: startup_S.o startup_xc.o leaf.o defs.h
 	@echo 'Generating leaf executable...'
 	xcc $^ -o $@ -DNUM_CORES=$(NUM_CORES) $(SC_TARGET) $(LINK_FLAGS)
 
-a.xe: controller.xe leaf.xe container.xe
+core1.elf: controller.xe
 	xobjdump --split controller.xe
-	xobjdump -r 0,1,image_n0c0.elf container.xe
-	rm controller.xe image_n0c0.elf config.xml platform_def.xn program_info.txt
+	mv image_n0c0.elf core1.elf
+	rm config.xml platform_def.xn program_info.txt
+
+core2.elf: leaf.xe
 	xobjdump --split leaf.xe
-	n=2 ; while [[ $$n -lt $(NUM_CORES) ]]; do \
-    x=$$(($$n/$(CORES_PER_NODE))); \
-    y=$$(($$n%$(CORES_PER_NODE))); \
-    echo "Replacing node $$x and core $$y with leaf image"; \
-    xobjdump -r $$x,$$y,image_n0c0.elf container.xe; \
-    ((n = n + 1)); \
-  done
-	rm leaf.xe image_n0c0.elf config.xml platform_def.xn program_info.txt
-	mv container.xe a.xe
+	mv image_n0c0.elf core2.elf
+	rm config.xml platform_def.xn program_info.txt
+
+#a.xe: controller.xe leaf.xe container.xe
+#	xobjdump --split controller.xe
+#	xobjdump -r 0,1,image_n0c0.elf container.xe
+#	rm controller.xe image_n0c0.elf config.xml platform_def.xn program_info.txt
+#	xobjdump --split leaf.xe
+#	n=2 ; while [[ $$n -lt $(NUM_CORES) ]]; do \
+#    x=$$(($$n/$(CORES_PER_NODE))); \
+#    y=$$(($$n%$(CORES_PER_NODE))); \
+#    echo "Replacing node $$x and core $$y with leaf image"; \
+#    xobjdump -r $$x,$$y,image_n0c0.elf container.xe; \
+#    ((n = n + 1)); \
+#  done
+#	rm leaf.xe image_n0c0.elf config.xml platform_def.xn program_info.txt
+#	mv container.xe a.xe
 
 clean:
 	@rm *.o *.xe
