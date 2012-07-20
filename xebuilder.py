@@ -51,8 +51,8 @@ def writeSection(out, coreNumber, fn):
   out.write("\0\0")
   out.write("\x14\0\0\0\0\0\0\0")
   out.write("\0\0\0\0")
-  out.write("%c\0" % jtagIndex)
-  out.write("%c\0" % coreNumber)
+  out.write(struct.pack("H", jtagIndex))
+  out.write(struct.pack("H", coreNumber))
   out.write("\0\0\0\0\0\0\0\0")
   out.write("\0\0\0\0") # CRC
   f.close()
