@@ -245,6 +245,7 @@ remoteWrite:
   out   res[r3], r9         // m ! address
   out   res[r3], r7         // m ! value
   outct res[r3], CT_END     // m ! CT_END
+  chkct res[r3], CT_END     // m ! CT_END
   
   outct res[r8], CT_END     // c ! CT_END
   bu loop

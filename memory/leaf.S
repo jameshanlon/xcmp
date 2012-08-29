@@ -62,6 +62,7 @@ write:
   in    r3, res[r0]
   chkct res[r0], CT_END
   stw   r3, r4[r2]
+  outct res[r0], CT_END
   bu    loop
 
 exit:  
