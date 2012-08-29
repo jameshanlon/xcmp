@@ -44,12 +44,12 @@ leaf.xe: startup_S.o startup_xc.o leaf.o defs.h
 core1.elf: controller.xe
 	xobjdump --split controller.xe
 	mv image_n0c0.elf core1.elf
-	rm config.xml platform_def.xn program_info.txt
+	rm -f config.xml platform_def.xn program_info.txt
 
 core2.elf: leaf.xe
 	xobjdump --split leaf.xe
 	mv image_n0c0.elf core2.elf
-	rm config.xml platform_def.xn program_info.txt
+	rm -f config.xml platform_def.xn program_info.txt
 
 #a.xe: controller.xe leaf.xe container.xe
 #	xobjdump --split controller.xe
@@ -67,5 +67,5 @@ core2.elf: leaf.xe
 #	mv container.xe a.xe
 
 clean:
-	@rm *.o *.xe
+	@rm -f *.o *.xe
  

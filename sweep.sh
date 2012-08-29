@@ -12,12 +12,12 @@ bldwht=${txtbld}$(tput setaf 7) # white
 txtrst=$(tput sgr0)             # Reset
 
 #set -x
-
-#set -x
 echo "" > log.txt
 
+export XCC_DEVICE_PATH=`pwd`/configs
+
 # For each memory type
-for n in 8 16 32 64 128 256 512 1024 2048 4096; do
+for n in 64 128 256 512 1024 2048 4096; do
   echo -ne $txtred
   echo "$n cores"
   echo -ne $txtrst
@@ -33,8 +33,8 @@ for n in 8 16 32 64 128 256 512 1024 2048 4096; do
   echo "($(($(stat -c%s "a.xe")/1024)) KB)"
   echo "  Running simulation"
   echo -ne $txtorg
-  #axe a.xe -S -c configs/$n-2dmesh.cfg < ecmps1.x 
-  axe a.xe -S -c configs/$n-clos.cfg < ecmps1.x 
+  axe a.xe -S -c configs/$n-2dmesh.cfg < ecmps1.x 
+  #axe a.xe -S -c configs/$n-clos.cfg < ecmps1.x 
   echo -ne $txtrst
   
 done

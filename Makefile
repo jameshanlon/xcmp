@@ -17,5 +17,5 @@ $(PROGRAM): xfastsim1.c $(OBJS)
 	dump	
 
 clean:
-	@rm $(OBJS) $(PROGRAM)
+	@rm -f $(OBJS) $(PROGRAM)
 
