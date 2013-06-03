@@ -11,7 +11,7 @@ bldblu=${txtbld}$(tput setaf 4) # blue
 bldwht=${txtbld}$(tput setaf 7) # white
 txtrst=$(tput sgr0)             # Reset
 
-#set -x
+set -x
 echo "" > log.txt
 
 export XCC_DEVICE_PATH=`pwd`/configs
@@ -24,18 +24,17 @@ for n in 64 128 256 512 1024 2048 4096; do
   echo -ne $txtrst
   echo "$n cores" >> log.txt
 
-  echo "  Creating memory images"
+  echo "  creating memory images"
   (cd memory; make clean >> log.txt && \
     make NUM_CORES=$n CORES_PER_NODE=$n >> log.txt)
-  echo "  Creating compiler image"
-  bash build.sh &>> log.txt
-  echo -ne "  Building XE "
-  python xebuilder.py $n a.elf memory/core1.elf memory/core2.elf
+  echo -ne "  building XE "
+  python xebuilder.py $n cmp.elf memory/core1.elf memory/core2.elf
   echo "($(($(stat -c%s "a.xe")/1024)) KB)"
-  echo "  Running simulation"
+  echo "  running simulation"
   echo -ne $txtorg
   #axe a.xe -S -c configs/$n-2dmesh.cfg < ecmps1.x 
   axe a.xe -S -c configs/$n-clos.cfg < ecmps1.x 
+  echo "  output $(($(stat -c%s "axe")/1024)) KB"
   echo -ne $txtrst
   
 done

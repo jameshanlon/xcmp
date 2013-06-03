@@ -24,14 +24,14 @@ void initMemory() {
  * available.
  */
 void resetChanends() {
-  unsigned c = 1;
   unsigned c0;
+  unsigned c;
   asm("getr %0, " S(XS1_RES_TYPE_CHANEND) : "=r"(c0));
   
   // Get all remaining channels
-  while(c) {
-    asm("getr %0, " S(XS1_RES_TYPE_CHANEND) : "=r"(c));
-  }
+  do {
+    asm volatile("getr %0, " S(XS1_RES_TYPE_CHANEND) : "=r"(c));
+  } while(c);
    
   // Free all channels
   c = c0 & 0xFFFF00FF;

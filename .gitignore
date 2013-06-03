@@ -1,0 +1,12 @@
+*.xe
+log.txt
+sim2
+xfastsim
+cmp.elf
+
+elfer/elfer
+elfer/*.o
+
+memory/*.o
+memory/*.elf
+

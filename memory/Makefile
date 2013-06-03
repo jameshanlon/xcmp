@@ -9,10 +9,7 @@ DEFINES        := \
   -DCORES_PER_NODE=$(CORES_PER_NODE) \
   -D$(SYSTEM)
 COMPILE_XCC    := $(XCC) -Wall -O2 -c $(DEFINES)
-SC_TARGET      := ../configs/1core.xn #-target=XS1-L1A-LQ64
-CONFIGS        := ../configs
-CONFIG         := XS1-L$(NUM_CORES)A.xn
-#CONFIG         := XMP-$(NUM_CORES).xn
+CONFIG         := ../configs/1core.xn
 
 all: controller.xe leaf.xe core1.elf core2.elf
 
@@ -27,19 +24,14 @@ controller.o: controller.S
 
 leaf.o: leaf.S
 	$(COMPILE_XCC) $< -o $@
-
-container.xe: container.xc
-	@echo 'Generating container executable...'
-	export XCC_DEVICE_PATH=$(CONFIGS)
-	xcc $(COMPILE_FLAGS) $(CONFIGS)/$(CONFIG) $< -o $@
             
 controller.xe: startup_S.o startup_xc.o controller.o defs.h 
 	@echo 'Generating controller executable...'
-	xcc $^ -o $@ -DNUM_CORES=$(NUM_CORES) $(SC_TARGET) $(LINK_FLAGS)
+	xcc $^ -o $@ -DNUM_CORES=$(NUM_CORES) $(CONFIG) $(LINK_FLAGS)
 
 leaf.xe: startup_S.o startup_xc.o leaf.o defs.h
 	@echo 'Generating leaf executable...'
-	xcc $^ -o $@ -DNUM_CORES=$(NUM_CORES) $(SC_TARGET) $(LINK_FLAGS)
+	xcc $^ -o $@ -DNUM_CORES=$(NUM_CORES) $(CONFIG) $(LINK_FLAGS)
 
 core1.elf: controller.xe
 	xobjdump --split controller.xe
