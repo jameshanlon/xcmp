@@ -2,14 +2,13 @@ SHELL          := /bin/bash
 XCC            := xcc
 LINK_FLAGS     := -O2 -nostartfiles -Xmapper --nochaninit
 NUM_CORES      := 16
-CORES_PER_NODE := 16
 SYSTEM         := XS1_L
 DEFINES        := \
   -DNUM_CORES=$(NUM_CORES) \
   -DCORES_PER_NODE=$(CORES_PER_NODE) \
   -D$(SYSTEM)
 COMPILE_XCC    := $(XCC) -Wall -O2 -c $(DEFINES)
-CONFIG         := ../configs/1core.xn
+CONFIG         := ../configs/1core.xn  # single core device
 
 all: controller.xe leaf.xe core1.elf core2.elf
 
@@ -42,21 +41,6 @@ core2.elf: leaf.xe
 	xobjdump --split leaf.xe
 	mv image_n0c0.elf core2.elf
 	rm -f config.xml platform_def.xn program_info.txt
-
-#a.xe: controller.xe leaf.xe container.xe
-#	xobjdump --split controller.xe
-#	xobjdump -r 0,1,image_n0c0.elf container.xe
-#	rm controller.xe image_n0c0.elf config.xml platform_def.xn program_info.txt
-#	xobjdump --split leaf.xe
-#	n=2 ; while [[ $$n -lt $(NUM_CORES) ]]; do \
-#    x=$$(($$n/$(CORES_PER_NODE))); \
-#    y=$$(($$n%$(CORES_PER_NODE))); \
-#    echo "Replacing node $$x and core $$y with leaf image"; \
-#    xobjdump -r $$x,$$y,image_n0c0.elf container.xe; \
-#    ((n = n + 1)); \
-#  done
-#	rm leaf.xe image_n0c0.elf config.xml platform_def.xn program_info.txt
-#	mv container.xe a.xe
 
 clean:
 	@rm -f *.o *.xe

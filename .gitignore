@@ -1,5 +1,6 @@
 *.xe
 log.txt
+axe1
 sim2
 xfastsim
 cmp.elf
@@ -10,3 +11,4 @@ elfer/*.o
 memory/*.o
 memory/*.elf
 
+configs/*.cfg

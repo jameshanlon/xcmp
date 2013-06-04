@@ -11,31 +11,36 @@ bldblu=${txtbld}$(tput setaf 4) # blue
 bldwht=${txtbld}$(tput setaf 7) # white
 txtrst=$(tput sgr0)             # Reset
 
-set -x
+#set -x
+set -e # quit on errors
 echo "" > log.txt
 
 export XCC_DEVICE_PATH=`pwd`/configs
 
-# For each memory type
-for n in 64 128 256 512 1024 2048 4096; do
-#for n in 4096; do
-  echo -ne $txtred
-  echo "$n cores"
-  echo -ne $txtrst
-  echo "$n cores" >> log.txt
+# For each network type
+for t in clos mesh; do
+  # For each memory type
+  for m in SRAM eDRAM; do
+    #for n in 512 1024 2048 4096; do
+    for n in 512; do
+      echo $txtred "$t, $m, $n tiles" $txtrst
+      echo "$n cores" >> log.txt
 
-  echo "  creating memory images"
-  (cd memory; make clean >> log.txt && \
-    make NUM_CORES=$n CORES_PER_NODE=$n >> log.txt)
-  echo -ne "  building XE "
-  python xebuilder.py $n cmp.elf memory/core1.elf memory/core2.elf
-  echo "($(($(stat -c%s "a.xe")/1024)) KB)"
-  echo "  running simulation"
-  echo -ne $txtorg
-  #axe a.xe -S -c configs/$n-2dmesh.cfg < ecmps1.x 
-  axe a.xe -S -c configs/$n-clos.cfg < ecmps1.x 
-  echo "  output $(($(stat -c%s "axe")/1024)) KB"
-  echo -ne $txtrst
-  
+      echo "  creating memory images"
+      make -C memory clean >> log.txt 
+      make -C memory NUM_CORES=$n >> log.txt
+      
+      echo -ne "  building XE "
+      python xebuilder.py $n cmp.elf memory/core1.elf memory/core2.elf
+      echo "($(($(stat -c%s "a.xe")/1024)) KiB)"
+      
+      echo "  running simulation"
+      echo -ne $txtorg
+      axe a.xe -S -c configs/$t-$n-$m.cfg < ecmps1.x >> /dev/null 
+      echo "  output $(($(stat -c%s "axe1")/1024)) KiB"
+      echo -ne $txtrst
+      
+    done
+  done
 done
 
